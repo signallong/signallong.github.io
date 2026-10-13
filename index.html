@@ -3,181 +3,167 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spot Trade Kâr Hesaplayıcı</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot Trade Hesaplayıcı</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 20px;
-    background: #0b1020; color: #edf2ff;
-    font-family: Arial, sans-serif;
-  }
-  .app {
-    max-width: 520px; margin: auto;
-    background: #151d30; padding: 24px;
-    border: 1px solid #293650; border-radius: 18px;
-  }
-  h1 { font-size: 25px; margin: 0 0 8px; }
-  .sub { color: #9caac4; font-size: 14px; margin-bottom: 24px; }
-  label { display: block; margin: 15px 0 7px; color: #cbd5e8; font-size: 14px; }
-  input {
-    width: 100%; padding: 13px; border-radius: 9px;
-    border: 1px solid #35435f; background: #0d1425;
-    color: white; font-size: 16px; outline: none;
-  }
-  input:focus { border-color: #60a5fa; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  button {
-    width: 100%; margin-top: 20px; padding: 14px;
-    border: 0; border-radius: 10px; background: #3b82f6;
-    color: white; font-size: 16px; font-weight: bold; cursor: pointer;
-  }
-  .results { margin-top: 22px; display: grid; gap: 12px; }
-  .result {
-    padding: 15px; background: #0d1425;
-    border: 1px solid #293650; border-radius: 12px;
-  }
-  .caption { color: #9caac4; font-size: 13px; }
-  .value { margin-top: 7px; font-size: 23px; font-weight: bold; overflow-wrap: anywhere; }
-  .green { color: #34d399; }
-  .red { color: #fb7185; }
-  .blue { color: #60a5fa; }
-  .small { color: #9caac4; font-size: 12px; line-height: 1.5; margin-top: 17px; }
-  .wide { grid-column: 1 / -1; }
+*{box-sizing:border-box}
+body{margin:0;padding:18px;background:#0b1020;color:#edf2ff;font-family:Arial,sans-serif}
+.app{max-width:540px;margin:auto;background:#151d30;padding:22px;border-radius:18px;border:1px solid #293650}
+h1{font-size:24px;margin:0 0 8px}
+.sub,.hint{color:#9caac4;font-size:13px;line-height:1.5}
+label{display:block;margin:15px 0 7px;font-size:14px;color:#cbd5e8}
+input{width:100%;padding:12px;border-radius:9px;border:1px solid #35435f;background:#0d1425;color:white;font-size:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{padding:12px;border:0;border-radius:9px;background:#3b82f6;color:white;font-weight:bold;cursor:pointer}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.card{padding:14px;background:#0d1425;border:1px solid #293650;border-radius:11px;min-width:0}
+.wide{grid-column:1/-1}
+.caption{font-size:12px;color:#9caac4}
+.value{font-size:21px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}
+.green{color:#34d399}.red{color:#fb7185}.blue{color:#60a5fa}
+.hint{margin-top:17px}
 </style>
 </head>
 <body>
 <div class="app">
-  <h1>📈 Spot Kâr Hesaplayıcı</h1>
-  <div class="sub">Alış-satış fiyatını gir, komisyon sonrası sonucunu gör.</div>
+<h1>📊 Spot Trade Hesaplayıcı</h1>
+<div class="sub">İşlem büyüklüğünü, coin miktarını ve net kârını hesapla.</div>
 
-  <label>Coin adı (isteğe bağlı)</label>
-  <input id="coin" placeholder="Örn. BTC, ETH, USUSDT">
+<label>Coin / parite</label>
+<input id="coin" value="BTC/USDT" placeholder="Örn. ETH/USDT">
 
-  <div class="grid">
-    <div>
-      <label>Alış fiyatı (USDT)</label>
-      <input id="buy" type="number" min="0" step="any" value="0.049">
-    </div>
-    <div>
-      <label>Satış fiyatı (USDT)</label>
-      <input id="sell" type="number" min="0" step="any" value="0.051">
-    </div>
-  </div>
+<div class="grid">
+<div>
+<label>Alış fiyatı (USDT)</label>
+<input id="buy" type="number" min="0" step="any" value="0.049">
+</div>
+<div>
+<label>Satış fiyatı (USDT)</label>
+<input id="sell" type="number" min="0" step="any" value="0.051">
+</div>
+</div>
 
-  <label>İşleme ayrılan toplam sermaye (USDT)</label>
-  <input id="capital" type="number" min="0" step="any" value="1000">
+<label>Toplam sermaye (USDT)</label>
+<input id="capital" type="number" min="0" step="any" value="1000">
 
-  <div class="grid">
-    <div>
-      <label>Alış komisyonu (%)</label>
-      <input id="buyFee" type="number" min="0" step="any" value="0.1">
-    </div>
-    <div>
-      <label>Satış komisyonu (%)</label>
-      <input id="sellFee" type="number" min="0" step="any" value="0.1">
-    </div>
-  </div>
+<label>İşlemde kullanılacak miktar (USDT)</label>
+<input id="amount" type="number" min="0" step="any" value="300">
 
-  <button onclick="calculate()">Kâr / Zararı Hesapla</button>
+<div class="buttons">
+<button onclick="setAmount(25)">%25 kullan</button>
+<button onclick="setAmount(50)">%50 kullan</button>
+<button onclick="setAmount(75)">%75 kullan</button>
+<button onclick="setAmount(100)">%100 kullan</button>
+</div>
 
-  <div class="results" aria-live="polite">
-    <div class="result">
-      <div class="caption">Net kâr / zarar (komisyon sonrası)</div>
-      <div id="profit" class="value green">+38.41 USDT</div>
-    </div>
-    <div class="grid">
-      <div class="result">
-        <div class="caption">Net getiri</div>
-        <div id="roi" class="value green">+3.84%</div>
-      </div>
-      <div class="result">
-        <div class="caption">Fiyat değişimi</div>
-        <div id="gross" class="value blue">+4.08%</div>
-      </div>
-      <div class="result">
-        <div class="caption">Satıştan eline geçen</div>
-        <div id="proceeds" class="value">1,038.41</div>
-        <div class="caption">USDT</div>
-      </div>
-      <div class="result">
-        <div class="caption">Alınan coin miktarı</div>
-        <div id="quantity" class="value">20,366.46</div>
-      </div>
-      <div class="result wide">
-        <div class="caption">Komisyonlar hariç başa baş satış fiyatı</div>
-        <div id="breakeven" class="value">0.04910 USDT</div>
-        <div class="caption">Bu fiyatın altında satış yaparsan net zarar oluşabilir.</div>
-      </div>
-    </div>
-  </div>
+<div class="grid">
+<div>
+<label>Alış komisyonu (%)</label>
+<input id="buyFee" type="number" min="0" step="any" value="0.1">
+</div>
+<div>
+<label>Satış komisyonu (%)</label>
+<input id="sellFee" type="number" min="0" step="any" value="0.1">
+</div>
+</div>
 
-  <div class="small">
-    Hesaplama, sermayenin alış komisyonunu da kapsadığı varsayımıyla yapılır.
-    Spread, kayma ve olası ek ücretler dahil değildir. Gerçek komisyon uygulaması
-    borsadaki ücret ödeme yöntemine göre farklılık gösterebilir.
-  </div>
+<button style="width:100%;margin-top:18px" onclick="calc()">Hesapla</button>
+
+<div class="results">
+<div class="card">
+<div class="caption">İşlem büyüklüğü</div>
+<div class="value blue" id="used">300 USDT</div>
+</div>
+<div class="card">
+<div class="caption">Alınabilecek coin</div>
+<div class="value" id="qty">6.116.564</div>
+</div>
+<div class="card">
+<div class="caption">Net kâr / zarar</div>
+<div class="value green" id="profit">+11.52 USDT</div>
+</div>
+<div class="card">
+<div class="caption">Net getiri</div>
+<div class="value green" id="roi">+3.84%</div>
+</div>
+<div class="card">
+<div class="caption">Fiyat değişimi</div>
+<div class="value blue" id="gross">+4.08%</div>
+</div>
+<div class="card">
+<div class="caption">Toplam komisyon</div>
+<div class="value" id="fees">0.60 USDT</div>
+</div>
+<div class="card wide">
+<div class="caption">Satış sonrası toplam para (işlem tutarı + kâr/zarar)</div>
+<div class="value" id="total">311.52 USDT</div>
+</div>
+<div class="card wide">
+<div class="caption">Başa baş satış fiyatı</div>
+<div class="value" id="break">0.04910 USDT</div>
+<div class="caption">Bu seviyenin altında işlem net zarara geçebilir.</div>
+</div>
+</div>
+
+<div class="hint">
+İşlem miktarı, toplam sermayenden ayrı hesaplanır. Kullanılmayan sermaye hesabında kalır.
+Komisyonlar tahminidir; spread, kayma ve borsanın minimum emir miktarı dahil değildir.
+</div>
 </div>
 
 <script>
-function num(id) {
-  return Number(document.getElementById(id).value);
-}
-function fmt(value, digits = 2) {
-  return value.toLocaleString("tr-TR", {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits
-  });
-}
-function calculate() {
-  const buy = num("buy");
-  const sell = num("sell");
-  const capital = num("capital");
-  const buyFee = num("buyFee") / 100;
-  const sellFee = num("sellFee") / 100;
+const $ = id => document.getElementById(id);
+const n = id => Number($(id).value);
+const fmt = (v,d=2) => v.toLocaleString("tr-TR",{
+  minimumFractionDigits:d,maximumFractionDigits:d
+});
 
-  if (
-    !Number.isFinite(buy) || !Number.isFinite(sell) ||
-    !Number.isFinite(capital) || buy <= 0 || sell <= 0 ||
-    capital <= 0 || buyFee < 0 || sellFee < 0 ||
-    buyFee >= 1 || sellFee >= 1
-  ) {
-    alert("Lütfen fiyatları, sermayeyi ve komisyonları doğru gir.");
+function setAmount(percent){
+  $("amount").value = (n("capital") * percent / 100).toFixed(8);
+  calc();
+}
+
+function calc(){
+  const buy=n("buy"), sell=n("sell"), capital=n("capital");
+  const amount=n("amount");
+  const bf=n("buyFee")/100, sf=n("sellFee")/100;
+
+  if(![buy,sell,capital,amount,bf,sf].every(Number.isFinite) ||
+     buy<=0 || sell<=0 || capital<=0 || amount<=0 ||
+     amount>capital || bf<0 || sf<0 || bf>=1 || sf>=1){
+    $("profit").textContent="Girişleri kontrol et";
+    $("roi").textContent="—";
     return;
   }
 
-  const quantity = capital / (buy * (1 + buyFee));
-  const proceeds = quantity * sell * (1 - sellFee);
-  const profit = proceeds - capital;
-  const roi = profit / capital * 100;
-  const gross = (sell / buy - 1) * 100;
-  const breakeven = buy * (1 + buyFee) / (1 - sellFee);
+  // Girilen tutar, alış komisyonu dahil kullanılacak toplam USDT'dir.
+  const qty=amount/(buy*(1+bf));
+  const sale=qty*sell;
+  const saleFee=sale*sf;
+  const buyFee=amount-qty*buy;
+  const proceeds=sale-saleFee;
+  const profit=proceeds-amount;
+  const roi=profit/amount*100;
+  const gross=(sell/buy-1)*100;
+  const fees=buyFee+saleFee;
+  const breakeven=buy*(1+bf)/(1-sf);
+  const color=profit>=0?"green":"red";
 
-  const color = profit >= 0 ? "green" : "red";
-  document.getElementById("profit").textContent =
-    (profit > 0 ? "+" : "") + fmt(profit) + " USDT";
-  document.getElementById("profit").className = "value " + color;
-
-  document.getElementById("roi").textContent =
-    (roi > 0 ? "+" : "") + fmt(roi) + "%";
-  document.getElementById("roi").className = "value " + color;
-
-  document.getElementById("gross").textContent =
-    (gross > 0 ? "+" : "") + fmt(gross, 3) + "%";
-  document.getElementById("proceeds").textContent = fmt(proceeds);
-  document.getElementById("quantity").textContent =
-    quantity.toLocaleString("tr-TR", { maximumFractionDigits: 8 });
-  document.getElementById("breakeven").textContent =
-    breakeven.toLocaleString("tr-TR", { maximumFractionDigits: 10 });
-
-  document.title = (document.getElementById("coin").value || "Spot") +
-    " - Kâr Hesaplayıcı";
+  $("used").textContent=fmt(amount)+" USDT";
+  $("qty").textContent=qty.toLocaleString("tr-TR",{maximumFractionDigits:8});
+  $("profit").textContent=(profit>0?"+":"")+fmt(profit)+" USDT";
+  $("profit").className="value "+color;
+  $("roi").textContent=(roi>0?"+":"")+fmt(roi,3)+"%";
+  $("roi").className="value "+color;
+  $("gross").textContent=(gross>0?"+":"")+fmt(gross,3)+"%";
+  $("fees").textContent=fmt(fees)+" USDT";
+  $("total").textContent=fmt(capital-amount+proceeds)+" USDT";
+  $("break").textContent=breakeven.toLocaleString("tr-TR",{maximumFractionDigits:10})+" USDT";
 }
 
-document.querySelectorAll("input").forEach(input => {
-  input.addEventListener("input", calculate);
-});
-calculate();
+document.querySelectorAll("input").forEach(el=>el.addEventListener("input",calc));
+calc();
 </script>
 </body>
 </html>
