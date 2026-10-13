@@ -4,166 +4,192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spot Trade Hesaplayıcı</title>
+<title>Bileşik Kâr Simülatörü</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:18px;background:#0b1020;color:#edf2ff;font-family:Arial,sans-serif}
-.app{max-width:540px;margin:auto;background:#151d30;padding:22px;border-radius:18px;border:1px solid #293650}
-h1{font-size:24px;margin:0 0 8px}
-.sub,.hint{color:#9caac4;font-size:13px;line-height:1.5}
-label{display:block;margin:15px 0 7px;font-size:14px;color:#cbd5e8}
-input{width:100%;padding:12px;border-radius:9px;border:1px solid #35435f;background:#0d1425;color:white;font-size:16px}
+.app{max-width:700px;margin:auto;background:#151d30;border:1px solid #293650;border-radius:18px;padding:22px}
+h1{font-size:25px;margin:0 0 8px}
+p{color:#a8b5ce;font-size:14px;line-height:1.5}
+label{display:block;margin:14px 0 7px;font-size:14px;color:#cbd5e8}
+input,select{width:100%;padding:12px;background:#0d1425;color:white;border:1px solid #35435f;border-radius:9px;font-size:16px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-button{padding:12px;border:0;border-radius:9px;background:#3b82f6;color:white;font-weight:bold;cursor:pointer}
-.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
-.card{padding:14px;background:#0d1425;border:1px solid #293650;border-radius:11px;min-width:0}
-.wide{grid-column:1/-1}
+button{padding:12px;background:#3b82f6;color:white;border:0;border-radius:9px;font-weight:bold;cursor:pointer}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.card{padding:14px;background:#0d1425;border:1px solid #293650;border-radius:10px;min-width:0}
 .caption{font-size:12px;color:#9caac4}
 .value{font-size:21px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}
 .green{color:#34d399}.red{color:#fb7185}.blue{color:#60a5fa}
-.hint{margin-top:17px}
+.tablewrap{overflow-x:auto;margin-top:20px}
+table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+th,td{text-align:right;padding:10px;border-bottom:1px solid #293650}
+th:first-child,td:first-child{text-align:left}
+th{color:#9caac4}
+.note{font-size:12px;color:#9caac4;margin-top:18px}
 </style>
 </head>
 <body>
 <div class="app">
-<h1>📊 Spot Trade Hesaplayıcı</h1>
-<div class="sub">İşlem büyüklüğünü, coin miktarını ve net kârını hesapla.</div>
-
-<label>Coin / parite</label>
-<input id="coin" value="BTC/USDT" placeholder="Örn. ETH/USDT">
+<h1>📈 Bileşik Kâr Simülatörü</h1>
+<p>Kârını sermayene ekle, işlem sayısına göre büyümeyi ve kayıp senaryolarını incele.</p>
 
 <div class="grid">
 <div>
-<label>Alış fiyatı (USDT)</label>
-<input id="buy" type="number" min="0" step="any" value="0.049">
+<label>Başlangıç sermayesi (USDT)</label>
+<input id="start" type="number" min="1" value="1000" step="any">
 </div>
 <div>
-<label>Satış fiyatı (USDT)</label>
-<input id="sell" type="number" min="0" step="any" value="0.051">
-</div>
-</div>
-
-<label>Toplam sermaye (USDT)</label>
-<input id="capital" type="number" min="0" step="any" value="1000">
-
-<label>İşlemde kullanılacak miktar (USDT)</label>
-<input id="amount" type="number" min="0" step="any" value="300">
-
-<div class="buttons">
-<button onclick="setAmount(25)">%25 kullan</button>
-<button onclick="setAmount(50)">%50 kullan</button>
-<button onclick="setAmount(75)">%75 kullan</button>
-<button onclick="setAmount(100)">%100 kullan</button>
-</div>
-
-<div class="grid">
-<div>
-<label>Alış komisyonu (%)</label>
-<input id="buyFee" type="number" min="0" step="any" value="0.1">
+<label>İşlem sayısı</label>
+<input id="trades" type="number" min="1" max="10000" value="100">
 </div>
 <div>
-<label>Satış komisyonu (%)</label>
-<input id="sellFee" type="number" min="0" step="any" value="0.1">
+<label>Kazanan işlem başına net getiri (%)</label>
+<input id="win" type="number" min="0" max="1000" value="1" step="any">
+</div>
+<div>
+<label>Kaybeden işlem başına zarar (%)</label>
+<input id="loss" type="number" min="0" max="100" value="1" step="any">
+</div>
+<div>
+<label>Kazanan işlemlerin oranı (%)</label>
+<input id="winrate" type="number" min="0" max="100" value="60">
+</div>
+<div>
+<label>Her işlemde kullanılan sermaye (%)</label>
+<input id="usage" type="number" min="1" max="100" value="100">
 </div>
 </div>
 
-<button style="width:100%;margin-top:18px" onclick="calc()">Hesapla</button>
+<label>İşlem sırası simülasyonu</label>
+<select id="mode">
+<option value="alternating">Kazanç ve kayıplar sırayla</option>
+<option value="wins">Önce kazançlar, sonra kayıplar</option>
+<option value="losses">Önce kayıplar, sonra kazançlar</option>
+<option value="average">Kazanç oranına göre ortalama senaryo</option>
+</select>
 
-<div class="results">
-<div class="card">
-<div class="caption">İşlem büyüklüğü</div>
-<div class="value blue" id="used">300 USDT</div>
+<div class="actions">
+<button onclick="run()">Hesapla</button>
+<button onclick="resetForm()">Sıfırla</button>
 </div>
+
+<div class="cards">
 <div class="card">
-<div class="caption">Alınabilecek coin</div>
-<div class="value" id="qty">6.116.564</div>
-</div>
-<div class="card">
-<div class="caption">Net kâr / zarar</div>
-<div class="value green" id="profit">+11.52 USDT</div>
+<div class="caption">Son sermaye</div>
+<div id="final" class="value green">—</div>
 </div>
 <div class="card">
-<div class="caption">Net getiri</div>
-<div class="value green" id="roi">+3.84%</div>
+<div class="caption">Toplam kâr / zarar</div>
+<div id="profit" class="value">—</div>
 </div>
 <div class="card">
-<div class="caption">Fiyat değişimi</div>
-<div class="value blue" id="gross">+4.08%</div>
+<div class="caption">Toplam getiri</div>
+<div id="roi" class="value blue">—</div>
 </div>
 <div class="card">
-<div class="caption">Toplam komisyon</div>
-<div class="value" id="fees">0.60 USDT</div>
-</div>
-<div class="card wide">
-<div class="caption">Satış sonrası toplam para (işlem tutarı + kâr/zarar)</div>
-<div class="value" id="total">311.52 USDT</div>
-</div>
-<div class="card wide">
-<div class="caption">Başa baş satış fiyatı</div>
-<div class="value" id="break">0.04910 USDT</div>
-<div class="caption">Bu seviyenin altında işlem net zarara geçebilir.</div>
+<div class="caption">Kazanç / kayıp sayısı</div>
+<div id="counts" class="value">—</div>
 </div>
 </div>
 
-<div class="hint">
-İşlem miktarı, toplam sermayenden ayrı hesaplanır. Kullanılmayan sermaye hesabında kalır.
-Komisyonlar tahminidir; spread, kayma ve borsanın minimum emir miktarı dahil değildir.
+<div class="tablewrap">
+<table>
+<thead><tr><th>İşlem</th><th>Son sermaye</th><th>Kâr / zarar</th><th>Toplam getiri</th></tr></thead>
+<tbody id="rows"></tbody>
+</table>
 </div>
+
+<p class="note">
+Bu bir matematiksel simülasyondur, kazanç garantisi değildir. Kazanç oranı yalnızca
+işlem sayısını ve sıralamasını belirler; gelecekteki başarı oranını tahmin etmez.
+Getiri ve zarar oranlarını komisyon sonrası net değerler olarak gir. Gerçek sonuçlar
+spread, kayma, likidite ve işlem hataları nedeniyle farklı olabilir. Her işlemde
+sermayenin yalnızca belirttiğin yüzdesi kullanılır; kalan tutar nakitte kalır.
+</p>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
-const n = id => Number($(id).value);
-const fmt = (v,d=2) => v.toLocaleString("tr-TR",{
-  minimumFractionDigits:d,maximumFractionDigits:d
-});
+const money = x => x.toLocaleString("tr-TR",{
+  minimumFractionDigits:2,maximumFractionDigits:2
+})+" USDT";
+const pct = x => (x>0?"+":"")+x.toLocaleString("tr-TR",{
+  minimumFractionDigits:2,maximumFractionDigits:2
+})+"%";
 
-function setAmount(percent){
-  $("amount").value = (n("capital") * percent / 100).toFixed(8);
-  calc();
-}
+function run(){
+  const start=Number($("start").value);
+  const n=Number($("trades").value);
+  const win=Number($("win").value)/100;
+  const loss=Number($("loss").value)/100;
+  const wr=Number($("winrate").value)/100;
+  const usage=Number($("usage").value)/100;
+  const mode=$("mode").value;
 
-function calc(){
-  const buy=n("buy"), sell=n("sell"), capital=n("capital");
-  const amount=n("amount");
-  const bf=n("buyFee")/100, sf=n("sellFee")/100;
-
-  if(![buy,sell,capital,amount,bf,sf].every(Number.isFinite) ||
-     buy<=0 || sell<=0 || capital<=0 || amount<=0 ||
-     amount>capital || bf<0 || sf<0 || bf>=1 || sf>=1){
-    $("profit").textContent="Girişleri kontrol et";
-    $("roi").textContent="—";
+  if(!Number.isFinite(start)||start<=0||!Number.isInteger(n)||n<1||n>10000||
+     !Number.isFinite(win)||win<0||!Number.isFinite(loss)||loss<0||loss>=1||
+     !Number.isFinite(wr)||wr<0||wr>1||!Number.isFinite(usage)||usage<=0||usage>1){
+    alert("Lütfen geçerli değerler gir. İşlem sayısı 1–10.000 aralığında olmalı.");
     return;
   }
 
-  // Girilen tutar, alış komisyonu dahil kullanılacak toplam USDT'dir.
-  const qty=amount/(buy*(1+bf));
-  const sale=qty*sell;
-  const saleFee=sale*sf;
-  const buyFee=amount-qty*buy;
-  const proceeds=sale-saleFee;
-  const profit=proceeds-amount;
-  const roi=profit/amount*100;
-  const gross=(sell/buy-1)*100;
-  const fees=buyFee+saleFee;
-  const breakeven=buy*(1+bf)/(1-sf);
-  const color=profit>=0?"green":"red";
+  const wins=Math.round(n*wr);
+  let capital=start, winsDone=0, lossesDone=0;
+  const tbody=$("rows");
+  tbody.innerHTML="";
+  const checkpoints=new Set();
+  for(let i=1;i<=n;i++){
+    if(i<=10||i%10===0||i===n)checkpoints.add(i);
+  }
 
-  $("used").textContent=fmt(amount)+" USDT";
-  $("qty").textContent=qty.toLocaleString("tr-TR",{maximumFractionDigits:8});
-  $("profit").textContent=(profit>0?"+":"")+fmt(profit)+" USDT";
-  $("profit").className="value "+color;
-  $("roi").textContent=(roi>0?"+":"")+fmt(roi,3)+"%";
-  $("roi").className="value "+color;
-  $("gross").textContent=(gross>0?"+":"")+fmt(gross,3)+"%";
-  $("fees").textContent=fmt(fees)+" USDT";
-  $("total").textContent=fmt(capital-amount+proceeds)+" USDT";
-  $("break").textContent=breakeven.toLocaleString("tr-TR",{maximumFractionDigits:10})+" USDT";
+  for(let i=1;i<=n;i++){
+    let isWin;
+    if(mode==="wins") isWin=i<=wins;
+    else if(mode==="losses") isWin=i>n-wins;
+    else if(mode==="alternating"){
+      isWin=(Math.floor(i*wr)!==Math.floor((i-1)*wr));
+    } else {
+      isWin=i<=wins;
+    }
+
+    const before=capital;
+    const amount=capital*usage;
+    const change=amount*(isWin?win:-loss);
+    capital += change;
+    if(isWin) winsDone++; else lossesDone++;
+
+    if(checkpoints.has(i)){
+      const tr=document.createElement("tr");
+      [i,money(capital),(change>=0?"+":"")+money(change),pct((capital/start-1)*100)]
+        .forEach((v,j)=>{
+          const td=document.createElement("td");
+          td.textContent=v;
+          if(j===2)td.style.color=change>=0?"#34d399":"#fb7185";
+          tr.appendChild(td);
+        });
+      tbody.appendChild(tr);
+    }
+  }
+
+  const profit=capital-start;
+  $("final").textContent=money(capital);
+  $("profit").textContent=(profit>=0?"+":"")+money(profit);
+  $("profit").className="value "+(profit>=0?"green":"red");
+  $("roi").textContent=pct((capital/start-1)*100);
+  $("counts").textContent=winsDone+" / "+lossesDone;
 }
-
-document.querySelectorAll("input").forEach(el=>el.addEventListener("input",calc));
-calc();
+function resetForm(){
+  $("start").value=1000;
+  $("trades").value=100;
+  $("win").value=1;
+  $("loss").value=1;
+  $("winrate").value=60;
+  $("usage").value=100;
+  $("mode").value="alternating";
+  run();
+}
+run();
 </script>
 </body>
 </html>
